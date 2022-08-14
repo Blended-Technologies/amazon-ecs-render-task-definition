@@ -25,6 +25,7 @@ To insert the image URI `amazon/amazon-ecs-sample:latest` as the image for the `
         container-name: web
         image: amazon/amazon-ecs-sample:latest
         environment-variables: "LOG_LEVEL=info"
+        secrets: "NEXTAUTH_SECRET=arn:aws:ssm:us-west-1:1000000:parameter/dev/NEXTAUTH_SECRET"
 
     - name: Deploy to Amazon ECS service
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
