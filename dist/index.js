@@ -1205,12 +1205,16 @@ async function run() {
     const taskDefContents = require(taskDefPath);
 
     // Insert the image URI
-    if (!Array.isArray(taskDefContents.containerDefinitions)) {
+    if (!Array.isArray(taskDefContents.containerDefinitions) || taskDefContents.containerDefinitions.length === 0) {
       throw new Error('Invalid task definition format: containerDefinitions section is not present or is not an array');
     }
-    const containerDef = taskDefContents.containerDefinitions.find(function(element) {
-      return element.name == containerName;
+    let containerDef = taskDefContents.containerDefinitions.find(function(element) {
+      return element.name === containerName;
     });
+    if (!containerDef && taskDefContents.containerDefinitions.length === 1 && taskDefContents.containerDefinitions[0].name === undefined) {
+      containerDef = taskDefContents.containerDefinitions[0];
+      containerDef.name = containerName;
+    }
     if (!containerDef) {
       throw new Error('Invalid task definition: Could not find container definition with matching name');
     }

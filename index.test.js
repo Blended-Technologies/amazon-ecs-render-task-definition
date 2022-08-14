@@ -94,6 +94,51 @@ describe('Render task definition', () => {
         expect(core.setOutput).toHaveBeenNthCalledWith(1, 'task-definition', 'new-task-def-file-name');
     });
 
+    test('assume first container when no name is defined in task definition file', async () => {
+        core.getInput = jest
+          .fn()
+          .mockReturnValueOnce('/hello/task-definition-no-name.json') // task-definition
+          .mockReturnValueOnce('web')                  // container-name
+          .mockReturnValueOnce('nginx:latest')         // image
+          .mockReturnValueOnce('EXAMPLE=here');        // environment-variables
+
+        jest.mock('/hello/task-definition-no-name.json', () => ({
+          family: 'task-def-family',
+          containerDefinitions: [
+            {
+              image: "some-other-image"
+            }
+          ]
+        }), { virtual: true });
+
+        await run();
+        expect(tmp.fileSync).toHaveBeenNthCalledWith(1, {
+            tmpdir: '/home/runner/work/_temp',
+            prefix: 'task-definition-',
+            postfix: '.json',
+            keep: true,
+            discardDescriptor: true
+          });
+        expect(fs.writeFileSync).toHaveBeenNthCalledWith(1, 'new-task-def-file-name',
+          JSON.stringify({
+              family: 'task-def-family',
+              containerDefinitions: [
+                  {
+                      image: "nginx:latest",
+                      name: "web",
+                      environment: [
+                          {
+                              name: "EXAMPLE",
+                              value: "here"
+                          }
+                      ]
+                  }
+              ]
+          }, null, 2)
+        );
+        expect(core.setOutput).toHaveBeenNthCalledWith(1, 'task-definition', 'new-task-def-file-name');
+    });
+
     test('renders a task definition at an absolute path, and with initial environment empty', async () => {
         core.getInput = jest
             .fn()
@@ -191,6 +236,10 @@ describe('Render task definition', () => {
                 {
                     name: "main",
                     image: "some-other-image"
+                },
+                {
+                    name: "main2",
+                    image: "some-other-image2"
                 }
             ]
         }), { virtual: true });
