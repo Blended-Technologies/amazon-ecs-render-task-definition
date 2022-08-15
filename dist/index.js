@@ -1276,8 +1276,8 @@ async function run() {
         }
 
         const secret = {
-          name: trimmedLine.substring(0, separatorIdx),
-          valueFrom: trimmedLine.substring(separatorIdx + 1),
+          name: trimmedLine.substring(0, separatorIdx).trim(),
+          valueFrom: trimmedLine.substring(separatorIdx + 1).trim(),
         };
 
         // Search container definition environment for one matching name
