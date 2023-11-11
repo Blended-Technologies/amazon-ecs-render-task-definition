@@ -2,6 +2,7 @@
 
 Inserts a container image URI into an Amazon ECS task definition JSON file, creating a new task definition file.
 
+
 **Table of Contents**
 
 <!-- toc -->

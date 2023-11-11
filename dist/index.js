@@ -1284,7 +1284,7 @@ async function run() {
         const secretDef = containerDef.secrets.find((e) => e.name === secret.name);
 
         if (secretDef) {
-          secretDef.value = secret.value;
+          secretDef.valueFrom = secret.valueFrom;
         } else {
           containerDef.secrets.push(secret);
         }
